@@ -1,0 +1,7 @@
+INCLUDE_DIRECTORIES(DIR_SRC ./src)
+cmake_minimum_required(VERSION 2.8)
+project( MyCvProject )
+find_package( OpenCV REQUIRED )
+AUX_SOURCE_DIRECTORY(DIR_SRC ./src)
+add_executable( MyCvProject main.cpp ./src/cv2ImageProcessing.cpp)
+target_link_libraries( MyCvProject ${OpenCV_LIBS} )
