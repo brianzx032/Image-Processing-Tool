@@ -26,6 +26,14 @@ class cv2ImageProcessing
     void SplitAlpha(CvImage& Foreground, CvImage& Alpha, const CvImage& SrcImg);
     CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha);
 
+    // BGR ==> Gray
+    void ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg);
+    CvImage ImBGR2Gray(const CvImage& SrcImg);
+
+    // Gray Hist
+    void CalcGrayHist(CvImage& GrayHist, const CvImage& SrcGray);
+    void ShowGrayHist(const std::string& winname, const CvImage& GrayHist);
+
     private:
 
 };
