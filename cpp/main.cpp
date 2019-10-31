@@ -16,20 +16,25 @@ int main()
     // cv2ip.ImShow("Display window", img); 
 
     Mat foreground, alpha, src_img, background,blend;
-    src_img=cv2ip.ImRead("logo.png");
+    src_img=cv2ip.ImRead("elephant.png");
     background=cv2ip.ImRead("pepper.bmp");
     cv2ip.SplitAlpha(foreground,alpha,src_img);
     cv2ip.ImWrite("fore.jpg",foreground);
     cv2ip.ImWrite("alpha.jpg",alpha);
-    blend=cv2ip.AlphaBlend(foreground,background,alpha);
-    cv2ip.ImWrite("blend.jpg", blend);
+    Mat dst1, dst2, alph,dstones,mask;
+    cv2ip.Resize(dst1,dst2,foreground,background);
+    cv2ip.Resize(dst1,alph,foreground,alpha);
+    blend=cv2ip.AlphaBlend(dst1,dst2,alph);
 
+    // display
     namedWindow("Display window", WINDOW_AUTOSIZE); 
-    cv2ip.ImShow("Display window", foreground); 
-    waitKey(0); 
-    cv2ip.ImShow("Display window", alpha); 
-    waitKey(0); 
+    cv2ip.ImShow("Display window", dst1); 
+    waitKey(0);  
+    cv2ip.ImShow("Display window", dst2); 
+    waitKey(0);  
     cv2ip.ImShow("Display window", blend); 
     waitKey(0); 
+    // cv2ip.ImShow("Display window", alph); 
+    // waitKey(0); 
     return 0;
 } 

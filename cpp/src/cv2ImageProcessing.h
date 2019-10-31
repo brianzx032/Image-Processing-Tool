@@ -13,12 +13,16 @@ class cv2ImageProcessing
     cv2ImageProcessing(void);
     ~cv2ImageProcessing(void);
 
+    // show info
+    void showInfo(CvImage& cvImg, const std::string& filename);
+
     // image read, write, show
     CvImage ImRead(const std::string& filename);
     void ImWrite(const std::string& filename, CvImage& cvImg);
     void ImShow(const std::string& winname, CvImage& cvImg);
     
-    // split alpha, alpha blend
+    // resize, split alpha, alpha blend
+    void Resize(CvImage& newImg1, CvImage& newImg2, const CvImage& SrcImg1, const CvImage& SrcImg2);
     void SplitAlpha(CvImage& Foreground, CvImage& Alpha, const CvImage& SrcImg);
     CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha);
 
