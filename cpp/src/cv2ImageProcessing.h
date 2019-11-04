@@ -34,6 +34,12 @@ class cv2ImageProcessing
     void CalcGrayHist(CvImage& GrayHist, const CvImage& SrcGray);
     void ShowGrayHist(const std::string& winname, const CvImage& GrayHist);
 
+    // color hist
+    void CalcColorHist(std::vector<CvImage>& ColorHist, const CvImage& SrcColor);
+    void ShowColorHist(const std::string& winname, const std::vector<CvImage>& ColorHist);
+
+    CvImage EqualizeColorHist(const CvImage& SrcImg);
+
     private:
 
 };

@@ -4,15 +4,12 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/brianzx/CV_Projects/cpp/main.cpp" "/home/brianzx/CV_Projects/cpp/CMakeFiles/MyCvProject.dir/main.cpp.o"
-  "/home/brianzx/CV_Projects/cpp/src/cv2ImageProcessing.cpp" "/home/brianzx/CV_Projects/cpp/CMakeFiles/MyCvProject.dir/src/cv2ImageProcessing.cpp.o"
+  "/home/brianzx/CV_Projects/cpp/gtk_test/main.cpp" "/home/brianzx/CV_Projects/cpp/gtk_test/CMakeFiles/hello.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "DIR_SRC"
-  "./src"
   "/usr/include/gtk-3.0"
   "/usr/include/at-spi2-atk/2.0"
   "/usr/include/at-spi-2.0"
@@ -32,8 +29,6 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/include/gdk-pixbuf-2.0"
   "/usr/include/glib-2.0"
   "/usr/lib/x86_64-linux-gnu/glib-2.0/include"
-  "/opt/ros/kinetic/include/opencv-3.3.1-dev"
-  "/opt/ros/kinetic/include/opencv-3.3.1-dev/opencv"
   )
 
 # Targets to which this target links.

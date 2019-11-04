@@ -1,7 +1,8 @@
-INCLUDE_DIRECTORIES(DIR_SRC ./src)
-cmake_minimum_required(VERSION 2.8)
-project( MyCvProject )
-find_package( OpenCV REQUIRED )
+# Set the name and the supported language of the project
+PROJECT(hello-world)
+# Set the minimum version of cmake required to build this project
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
 # Use the package PkgConfig to detect GTK+ headers/library files
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK3 REQUIRED gtk+-3.0)
@@ -13,6 +14,9 @@ LINK_DIRECTORIES(${GTK3_LIBRARY_DIRS})
 
 # Add other flags to the compiler
 ADD_DEFINITIONS(${GTK3_CFLAGS_OTHER})
-AUX_SOURCE_DIRECTORY(DIR_SRC ./src)
-add_executable( MyCvProject main.cpp ./src/cv2ImageProcessing.cpp)
-target_link_libraries( MyCvProject ${OpenCV_LIBS} ${GTK3_LIBRARIES})
+
+# Add an executable compiled from hello.c
+ADD_EXECUTABLE(hello main.cpp)
+
+# Link the target to the GTK+ libraries
+TARGET_LINK_LIBRARIES(hello ${GTK3_LIBRARIES})
