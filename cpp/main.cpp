@@ -13,47 +13,28 @@ int main()
 
     CvImage background,pac_man;
     pac_man=cv2ip.ImRead("pac_man.png");
-    // background=cv2ip.ImRead("blackhole.jpg");
-    // CvImage pig=cv2ip.ImRead("pig.jpg");
-    // // cvtColor(pig,pig,COLOR_BGR2BGRA);
-    // // cvtColor(pig,pig,COLOR_BGR2HSV);
-    // CvImage s_pig;
-    // s_pig.create(pig.cols*0.5,pig.rows*0.5,CV_8U);
-    // resize(pig,s_pig,s_pig.size());
-    // // cv2ip.ImShow("s_pig", s_pig); 
-    // // waitKey(0); 
-    // CvImage pig_roi=background(cv::Rect(500,100,s_pig.cols,s_pig.rows));
-    // addWeighted(pig_roi, 0.3, s_pig, 0.7, 0.0, s_pig);//dst = src1[I]*pac_alph+ src2[I]*beta + gamma；第一第四个参数就是各自权重，第5个参数就是公式中的偏执因子gamma。
-    // s_pig.copyTo(pig_roi);
-
-    // add_blend_img("pac_man.png",background,100,100,1,1);
     
-    // CvImage centre_roi = background(cv::Rect(100,100,pac_man.cols,pac_man.rows));
-    // CvImage centre_eq;
-    // // centre_eq=cv2ip.EqualizeColorHist(centre_roi);
-    // cvtColor(centre_roi,centre_eq,COLOR_BGR2HSV);
-    // centre_eq.copyTo(centre_roi);
-
-    // cv2ip.ImShow("background", background); 
-    // waitKey(0); 
-
-    // show_equalize_hist(background);
 
 // =================================================
     CvImage joker_orig=cv2ip.ImRead("joker.jpeg");
     
     CvImage joker_eq=show_equalize_hist(joker_orig);
     
+    // cv2ip.ImShow("pac_man",pac_man);
+    // waitKey(0); 
     add_blend_img("pac_man.png",joker_eq,525,150,0.65,0.65);
 
     CvImage face_roi=joker_eq(cv::Rect(525,150,pac_man.cols*0.65,pac_man.rows*0.65));
     CvImage face_hsv;
 
-    // cvtColor(face_roi,face_hsv,COLOR_BGR2HSV);
-    // face_hsv=show_equalize_hist(face_roi);
-    // face_hsv.copyTo(face_roi);
-
     namedWindow("joker_eq",CV_WINDOW_AUTOSIZE);
+    cv2ip.ImShow("joker_eq", joker_eq); 
+    waitKey(0); 
+
+    // cvtColor(face_roi,face_hsv,COLOR_BGR2HSV);
+    face_hsv=show_equalize_hist(face_roi);
+    face_hsv.copyTo(face_roi);
+
     cv2ip.ImShow("joker_eq", joker_eq); 
     waitKey(0); 
 
@@ -85,14 +66,16 @@ void add_blend_img(const std::string& filename, CvImage& bgImg, int _x, int _y, 
     cv2ip.Resize(fg,bg,img_fg,img_bg);
     cv2ip.Resize(fg,al,img_fg,img_al);
 
-    // cv2ip.ImShow("fg", fg); 
-    // waitKey(0);
-    // cv2ip.ImShow("bg", bg); 
-    // waitKey(0);
+    cv2ip.ImShow("fg", fg); 
+    waitKey(0);
+    cv2ip.ImShow("bg", bg); 
+    waitKey(0);
     // cv2ip.ImShow("al", al); 
     // waitKey(0);
 
     CvImage img_blend=cv2ip.AlphaBlend(fg,bg,al);
+    cv2ip.ImShow("blend", img_blend); 
+    waitKey(0);
     img_blend.copyTo(img_roi);
 
 }

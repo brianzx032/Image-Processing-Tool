@@ -90,12 +90,12 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     // alph.convertTo(al,CV_32FC3,255);
     // ImShow("alpha", al); 
     // cv::waitKey(0); 
-    // ImShow("fore", fore); 
-    // cv::waitKey(0); 
     // ImShow("back", back); 
     // cv::waitKey(0); 
 
     cv::cvtColor(fore,fore,cv::COLOR_BGR2HSV);
+    ImShow("fore", fore); 
+    cv::waitKey(0); 
 
     cv::multiply(alph, fore, fore);
     cv::multiply(cv::Scalar::all(1.0)-alph, back, back);
