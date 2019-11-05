@@ -4,6 +4,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#define NoCvt 200
 typedef cv::Mat CvImage;
 class cv2ImageProcessing
 {
@@ -24,6 +25,8 @@ class cv2ImageProcessing
     // resize, split alpha, alpha blend
     void Resize(CvImage& newImg1, CvImage& newImg2, const CvImage& SrcImg1, const CvImage& SrcImg2);
     void SplitAlpha(CvImage& Foreground, CvImage& Alpha, const CvImage& SrcImg);
+
+    CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha, int code);
     CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha);
 
     // BGR ==> Gray

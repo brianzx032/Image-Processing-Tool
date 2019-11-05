@@ -68,7 +68,7 @@ void cv2ImageProcessing::SplitAlpha(CvImage& Foreground, CvImage& Alpha, const C
     channels_src.at(3).copyTo(Alpha);
 }
 
-CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha)
+CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha, int code)
 {
     CvImage fore, back, alph, out_img,al;
     std::vector<CvImage> alph_mask;
@@ -92,11 +92,13 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     // cv::waitKey(0); 
     // ImShow("back", back); 
     // cv::waitKey(0); 
-
-    cv::cvtColor(fore,fore,cv::COLOR_BGR2HSV);
-    ImShow("fore", fore); 
-    cv::waitKey(0); 
-
+    if (code!=NoCvt)
+    {
+        cv::cvtColor(fore,fore,code);
+        ImShow("processing", fore); 
+        cv::waitKey(0); 
+    }
+    
     cv::multiply(alph, fore, fore);
     cv::multiply(cv::Scalar::all(1.0)-alph, back, back);
     cv::add(fore, back, out_img);
@@ -111,6 +113,10 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     return out_img;
 }
 
+CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha)
+{
+    return AlphaBlend(Foreground,Background,Alpha,NoCvt);
+}
 // convert BGR => Gray
 void cv2ImageProcessing::ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg)
 {
