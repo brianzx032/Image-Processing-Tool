@@ -95,6 +95,8 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     // ImShow("back", back); 
     // cv::waitKey(0); 
 
+    cv::cvtColor(fore,fore,cv::COLOR_BGR2HSV);
+
     cv::multiply(alph, fore, fore);
     cv::multiply(cv::Scalar::all(1.0)-alph, back, back);
     cv::add(fore, back, out_img);
@@ -158,6 +160,7 @@ void cv2ImageProcessing::ShowGrayHist(const std::string& winname, const CvImage&
 		line(histImage, cv::Point((i - 1)*bin_w, hist_h - cvRound(GrayHist.at<float>(i - 1))),
 			cv::Point((i)*bin_w, hist_h - cvRound(GrayHist.at<float>(i))), cv::Scalar(255, 255, 255), 2, CV_AA);
 	}
+    cv::namedWindow(winname,CV_WINDOW_AUTOSIZE);
 	ImShow(winname, histImage);
 	cv::waitKey(0);
 
@@ -209,6 +212,7 @@ void cv2ImageProcessing::ShowColorHist(const std::string& winname, const std::ve
 		line(histImage, cv::Point((i - 1)*bin_w, hist_h - cvRound(r_hist.at<float>(i - 1))),
 			cv::Point((i)*bin_w, hist_h - cvRound(r_hist.at<float>(i))), cv::Scalar(0, 0, 255), 2, CV_AA);
 	}
+    cv::namedWindow(winname,CV_WINDOW_AUTOSIZE);
 	ImShow(winname, histImage);
 	cv::waitKey(0);
 }
