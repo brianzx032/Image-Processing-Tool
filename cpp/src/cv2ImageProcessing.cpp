@@ -87,11 +87,6 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
 
     out_img=CvImage::zeros(fore.size(),fore.type());
     
-    // alph.convertTo(al,CV_32FC3,255);
-    // ImShow("alpha", al); 
-    // cv::waitKey(0); 
-    // ImShow("back", back); 
-    // cv::waitKey(0); 
     if (code!=NoCvt)
     {
         cv::cvtColor(fore,fore,code);
@@ -103,13 +98,6 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     cv::multiply(cv::Scalar::all(1.0)-alph, back, back);
     cv::add(fore, back, out_img);
 
-    // ImShow("alpha", alph); 
-    // cv::waitKey(0); 
-    // ImShow("fore", fore); 
-    // cv::waitKey(0); 
-    // ImShow("back", back); 
-    // cv::waitKey(0); 
-    // std::cout<<out_img<<std::endl;
     return out_img;
 }
 

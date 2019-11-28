@@ -60,12 +60,6 @@ int main()
     cv2ip.ImWrite("joker_logo.jpg",joker_eq);
     waitKey(0); 
 
-    // cvtColor(joker_eq,joker_eq,COLOR_BGR2HSV);
-
-    // add_blend_img("logo.png",joker_eq,50,50,0.2,0.2,NoCvt);
-    // cv2ip.ImShow("joker_eq", joker_eq); 
-    // cv2ip.ImWrite("joker_logo_hsv.jpg",joker_eq);
-    // waitKey(0); 
 
 
     return 0;
