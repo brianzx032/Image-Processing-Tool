@@ -9,64 +9,12 @@ cv2ImageProcessing cv2ip;
 void add_blend_img(const std::string& filename, CvImage& cvImg, int _x, int _y, float _wdth_f, float _hght_f,int code);
 void add_blend_img(CvImage& fgImg, CvImage& bgImg, int _x, int _y, float _wdth_f, float _hght_f, int code);
 CvImage show_equalize_hist(CvImage& cvImg);
+void assignment1();
+void assignment2();
 int main()
 { 
-
-// =================================================
-// imread
-// =================================================
-    CvImage background,pac_man;
-    pac_man=cv2ip.ImRead("pac_man.png");
-    CvImage joker_orig=cv2ip.ImRead("joker.jpeg");
-    
-
-// =================================================
-// eualize
-// =================================================
-    CvImage joker_eq=show_equalize_hist(joker_orig);
-    cv2ip.ImWrite("joker_eq.jpg",joker_eq);
-
-// =================================================
-// Add pac man
-// =================================================
-    // cv2ip.ImShow("pac_man",pac_man);
-    // waitKey(0); 
-    add_blend_img(pac_man,joker_eq,525,150,0.65,0.65,COLOR_BGR2HSV);
-    cv2ip.ImWrite("joker_pac.jpg",joker_eq);
-
-    // set roi
-    CvImage face_roi=joker_eq(cv::Rect(525,150,pac_man.cols*0.65,pac_man.rows*0.65));
-    CvImage face_hsv;
-
-    namedWindow("joker_eq",CV_WINDOW_AUTOSIZE);
-    cv2ip.ImShow("joker_eq", joker_eq); 
-    waitKey(0); 
-
-    cvtColor(face_roi,face_hsv,COLOR_BGR2RGB);
-    face_hsv=show_equalize_hist(face_roi);
-    face_hsv.copyTo(face_roi);
-
-    cv2ip.ImShow("joker_eq", joker_eq); 
-    cv2ip.ImWrite("joker_face.jpg",joker_eq);
-    waitKey(0); 
-
-
-// =================================================
-// Add opencv logo
-// =================================================
-
-    add_blend_img("logo.png",joker_eq,50,50,0.2,0.2,NoCvt);
-    cv2ip.ImShow("joker_eq", joker_eq); 
-    cv2ip.ImWrite("joker_logo.jpg",joker_eq);
-    waitKey(0); 
-
-    // cvtColor(joker_eq,joker_eq,COLOR_BGR2HSV);
-
-    // add_blend_img("logo.png",joker_eq,50,50,0.2,0.2,NoCvt);
-    // cv2ip.ImShow("joker_eq", joker_eq); 
-    // cv2ip.ImWrite("joker_logo_hsv.jpg",joker_eq);
-    // waitKey(0); 
-
+    // assignment1();
+    assignment2();
 
     return 0;
 } 
@@ -155,4 +103,101 @@ CvImage show_equalize_hist(CvImage& cvImg)
     cv2ip.ShowColorHist("Equalize Hist", newhist);
 
     return outputImg;
+}
+
+void assignment1(){
+
+// =================================================
+// imread
+// =================================================
+    CvImage background,pac_man;
+    pac_man=cv2ip.ImRead("pac_man.png");
+    CvImage joker_orig=cv2ip.ImRead("joker.jpeg");
+    
+
+// =================================================
+// eualize
+// =================================================
+    CvImage joker_eq=show_equalize_hist(joker_orig);
+    cv2ip.ImWrite("joker_eq.jpg",joker_eq);
+
+// =================================================
+// Add pac man
+// =================================================
+    // cv2ip.ImShow("pac_man",pac_man);
+    // waitKey(0); 
+    add_blend_img(pac_man,joker_eq,525,150,0.65,0.65,COLOR_RGB2HSV);
+    cv2ip.ImWrite("joker_pac.jpg",joker_eq);
+
+    // set roi
+    CvImage face_roi=joker_eq(cv::Rect(525,150,pac_man.cols*0.65,pac_man.rows*0.65));
+    CvImage face_hsv;
+
+    namedWindow("joker_eq",CV_WINDOW_AUTOSIZE);
+    cv2ip.ImShow("joker_eq", joker_eq); 
+    waitKey(0); 
+
+    cvtColor(face_roi,face_hsv,COLOR_BGR2RGB);
+    face_hsv=show_equalize_hist(face_roi);
+    face_hsv.copyTo(face_roi);
+
+    cv2ip.ImShow("joker_eq", joker_eq); 
+    cv2ip.ImWrite("joker_face.jpg",joker_eq);
+    waitKey(0); 
+
+
+// =================================================
+// Add opencv logo
+// =================================================
+
+    add_blend_img("logo.png",joker_eq,50,50,0.2,0.2,NoCvt);
+    cv2ip.ImShow("joker_eq", joker_eq); 
+    cv2ip.ImWrite("joker_logo.jpg",joker_eq);
+    waitKey(0); 
+
+    // cvtColor(joker_eq,joker_eq,COLOR_BGR2HSV);
+
+    // add_blend_img("logo.png",joker_eq,50,50,0.2,0.2,NoCvt);
+    // cv2ip.ImShow("joker_eq", joker_eq); 
+    // cv2ip.ImWrite("joker_logo_hsv.jpg",joker_eq);
+    // waitKey(0); 
+
+}
+void assignment2(){
+
+// =================================================
+// imread
+// =================================================
+    CvImage img_orig=cv2ip.ImRead("ref4.jpg");
+    CvImage img_ref=cv2ip.ImRead("ref3.JPG");
+    
+
+// =================================================
+// equalize
+// =================================================
+    // CvImage joker_eq=show_equalize_hist(joker_orig);
+    CvImage img_match,img_eq;
+    // cvtColor(img_orig,img_orig,COLOR_BGR2YUV);
+    cv2ip.ColorEqualize(img_eq,img_orig,cv2ip.USE_RGB);
+// hist
+    vector<Mat> srchist;
+    cv2ip.CalcColorHist(srchist,img_orig);
+    cv2ip.ImShow("orig",img_orig);
+    // cv2ip.ShowColorHist("src Hist", srchist);
+// hist
+    vector<Mat> dsthist;
+    cv2ip.CalcColorHist(dsthist,img_eq);
+    cv2ip.ImShow("eq",img_eq);
+    cv2ip.ImWrite("img_eq.jpg",img_eq);
+    cv2ip.ShowColorHist("eq Hist", dsthist);
+
+    // cv2ip.ImShow("orig",img_orig);
+	// cv::waitKey(0);
+    cv2ip.ImShow("ref",img_ref);
+	// cv::waitKey(0);
+    cv2ip.HistMatching(img_match,img_orig,img_ref);
+    cv2ip.ImShow("match",img_match);
+	// cv::waitKey(0);
+    vector<CvImage> hst;
+    cv2ip.ShowCDF(img_match);
 }

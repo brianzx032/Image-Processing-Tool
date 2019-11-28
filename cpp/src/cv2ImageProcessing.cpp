@@ -146,6 +146,7 @@ void cv2ImageProcessing::CalcGrayHist(CvImage& GrayHist, const CvImage& SrcGray)
     CvImage src;
     // SrcGray.convertTo(src,CV_32FC3, 255);
     SrcGray.convertTo(src,CV_8U);
+    // std::cout<<src<<std::endl;
     cv::calcHist(&src,1,histChannel,CvImage(),GrayHist,1,&histSize,&hstranges,true,false);
     // std::cout<<GrayHist<<std::endl<<std::endl;
 }
@@ -223,6 +224,158 @@ void cv2ImageProcessing::ShowColorHist(const std::string& winname, const std::ve
 	cv::waitKey(0);
 }
 
+
+void cv2ImageProcessing::MonoEqualize(CvImage& DstGray, const CvImage& SrcGray)
+{
+    cv::equalizeHist(SrcGray,DstGray);
+}
+
+void cv2ImageProcessing::ColorEqualize(CvImage& DstColor, const CvImage& SrcColor, const CV2_COLOREQUALIZE_TYPE Type)
+{
+    std::vector<CvImage> ImgCh;
+    cv::split(SrcColor,ImgCh);
+    CvImage Ch[3];
+    Ch[0]=ImgCh.at(0);
+    Ch[1]=ImgCh.at(1);
+    Ch[2]=ImgCh.at(2);
+
+    Ch[0].convertTo(Ch[0],CV_8U);
+    Ch[1].convertTo(Ch[1],CV_8U);
+    Ch[2].convertTo(Ch[2],CV_8U);
+    
+    switch (Type)
+    {
+    case USE_YUV:
+        cv::equalizeHist(Ch[0],Ch[0]);//Y
+        break;
+    case USE_HSV:
+        cv::equalizeHist(Ch[2],Ch[2]);//V
+        break;
+    case USE_RGB:
+        cv::equalizeHist(Ch[0],Ch[0]);//R
+        cv::equalizeHist(Ch[1],Ch[1]);//G
+        cv::equalizeHist(Ch[2],Ch[2]);//B
+        break;
+    
+    default:
+        break;
+    }
+    cv::merge(ImgCh,DstColor);
+}
+
+void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg)
+{
+    std::vector<CvImage> SrcHist,RefHist,SrcPdf(3),RefPdf(3),SrcCdf(3),RefCdf(3),SrcCh(3),DstCh(3),refLut(3);
+    CalcColorHist(SrcHist,SrcImg);
+    CalcColorHist(RefHist,RefImg);
+    cv::split(SrcImg,SrcCh);
+    // std::cout<<SrcCh.at(0)<<std::endl;
+    
+    int SrcSum = SrcImg.rows*SrcImg.cols;
+    int RefSum = RefImg.rows*RefImg.cols;
+
+    for(int ch=0; ch<3; ch++)
+    {
+        SrcPdf.at(ch)=SrcHist.at(ch)/SrcSum;
+        RefPdf.at(ch)=RefHist.at(ch)/RefSum;
+        
+        SrcCdf.at(ch)=SrcPdf.at(ch).clone();
+        RefCdf.at(ch)=RefPdf.at(ch).clone();
+        
+        for(int i=1; i<256; i++)
+        {
+            SrcCdf.at(ch).at<float>(i)=SrcCdf.at(ch).at<float>(i-1)+SrcPdf.at(ch).at<float>(i);
+            RefCdf.at(ch).at<float>(i)=RefCdf.at(ch).at<float>(i-1)+RefPdf.at(ch).at<float>(i);
+        }
+
+        // RefCdf.at(ch).convertTo(refLut.at(ch),CV_8U,255); 
+        
+
+        // 累积概率的差值
+        float diff_cdf[256][256];
+        for (int i = 0; i < 256; i++)
+            for (int j = 0; j < 256; j++)
+                diff_cdf[i][j] = fabs(SrcCdf.at(ch).at<float>(i) - RefCdf.at(ch).at<float>(j));
+
+        // 构建灰度级映射表
+        RefCdf.at(ch).convertTo(refLut.at(ch),CV_8U); 
+        // Mat lut(1, 256, CV_8U);
+        for (int i = 0; i < 256; i++)
+        {
+            // 查找源灰度级为ｉ的映射灰度
+            //　和ｉ的累积概率差值最小的规定化灰度
+            float min = diff_cdf[i][0];
+            int index = 0;
+            for (int j = 1; j < 256; j++)
+            {
+                if (min > diff_cdf[i][j])
+                {
+                    min = diff_cdf[i][j];
+                    index = j;
+                }
+            }
+            refLut.at(ch).at<uchar>(i) = static_cast<uchar>(index);
+        }
+
+        
+        
+        // SrcCdf.at(ch).convertTo(SrcCdf.at(ch),CV_8U,255); 
+        // RefCdf.at(ch).convertTo(RefCdf.at(ch),CV_8U,255); 
+        // int Sval,Rval,Ridx=0;
+        // // refLut.at(ch).at<uchar>(0)=0;
+        // for(int i=0; i<256; i++)
+        // {
+        //     Sval=SrcCdf.at(ch).at<uchar>(i);
+        //     for(int j=0; j<256; j++)
+        //     {
+        //         Rval=RefCdf.at(ch).at<uchar>(j);
+        //         if(Sval==Rval)
+        //         {
+        //             Ridx=j;
+        //             break;
+        //         }
+        //     }
+        //     std::cout<<Ridx<<std::endl;
+        //     refLut.at(ch).at<uchar>(i)==static_cast<uchar>(Ridx);
+        // }
+
+
+        // std::cout<<SrcCdf.at(ch)<<std::endl;
+        // std::cout<<RefCdf.at(ch)<<std::endl;
+        std::cout<<refLut.at(ch)<<std::endl;
+
+        cv::LUT(SrcCh.at(ch),refLut.at(ch),DstCh.at(ch));
+    }
+
+    // ShowColorHist("hist",SrcHist);
+    ShowColorHist("SrcPdf",SrcPdf);
+    ShowColorHist("SrcCdf",SrcCdf);
+    ShowColorHist("RefPdf",RefPdf);
+    ShowColorHist("RefCdf",RefCdf);
+
+    cv::merge(DstCh,DstImg);
+    // showInfo(DstImg,"dst");
+    // std::cout<<DstImg<<std::endl;
+}
+
+void cv2ImageProcessing::ShowCDF(CvImage& Img)
+{
+    std::vector<CvImage> Hist,Pdf(3),Cdf(3);
+    CalcColorHist(Hist,Img);
+    
+    int pixelSum = Img.rows*Img.cols;
+
+    for(int ch=0; ch<3; ch++)
+    {
+        Pdf.at(ch)=Hist.at(ch)/pixelSum;
+        Cdf.at(ch)=Pdf.at(ch).clone();
+        
+        for(int i=1; i<256; i++)
+            Cdf.at(ch).at<float>(i)=Cdf.at(ch).at<float>(i-1)+Pdf.at(ch).at<float>(i);
+    }
+    ShowColorHist("Pdf",Pdf);
+    ShowColorHist("Cdf",Cdf);
+}
 CvImage cv2ImageProcessing::EqualizeColorHist(const CvImage& SrcImg)
 {
     std::vector<CvImage> channels;
