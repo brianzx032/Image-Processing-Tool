@@ -191,7 +191,6 @@ void assignment2(){
     cv2ip.ImWrite("img_eq.jpg",img_eq);
     cv2ip.ShowColorHist("eq Hist", dsthist);
 
-    // cv2ip.ImShow("orig",img_orig);
 	// cv::waitKey(0);
     cv2ip.ImShow("ref",img_ref);
 	// cv::waitKey(0);
