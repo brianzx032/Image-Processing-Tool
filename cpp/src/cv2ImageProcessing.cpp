@@ -376,22 +376,3 @@ void cv2ImageProcessing::ShowCDF(CvImage& Img)
     ShowColorHist("Pdf",Pdf);
     ShowColorHist("Cdf",Cdf);
 }
-CvImage cv2ImageProcessing::EqualizeColorHist(const CvImage& SrcImg)
-{
-    std::vector<CvImage> channels;
-    cv::split(SrcImg,channels);
-    CvImage blue, green, red, result;
-    blue=channels.at(0);
-    green=channels.at(1);
-    red=channels.at(2);
-
-    blue.convertTo(blue,CV_8U);
-    green.convertTo(green,CV_8U);
-    red.convertTo(red,CV_8U);
-    
-    cv::equalizeHist(blue,blue);
-    cv::equalizeHist(green,green);
-    cv::equalizeHist(red,red);
-    cv::merge(channels,result);
-    return result;
-}

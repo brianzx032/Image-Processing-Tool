@@ -92,7 +92,7 @@ CvImage show_equalize_hist(CvImage& cvImg)
     cv2ip.ShowColorHist("Color Hist", colorresult);
 
 // equalize
-    outputImg=cv2ip.EqualizeColorHist(cvImg);
+    // outputImg=cv2ip.EqualizeColorHist(cvImg);
     namedWindow("Equalize",CV_WINDOW_AUTOSIZE);
     cv2ip.ImShow("Equalize", outputImg); 
     waitKey(0);

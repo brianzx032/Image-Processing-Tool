@@ -42,7 +42,6 @@ class cv2ImageProcessing
     void ShowColorHist(const std::string& winname, const std::vector<CvImage>& ColorHist);
 
     void MonoEqualize(CvImage& DstGray, const CvImage& SrcGray);
-    CvImage EqualizeColorHist(const CvImage& SrcImg);//my eq
 
     enum CV2_COLOREQUALIZE_TYPE {USE_RGB=0, USE_HSV, USE_YUV};
     void ColorEqualize(CvImage& DstColor, const CvImage& SrcColor, const CV2_COLOREQUALIZE_TYPE Type=USE_RGB);
