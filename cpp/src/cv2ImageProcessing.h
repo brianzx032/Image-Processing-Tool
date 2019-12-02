@@ -48,6 +48,7 @@ class cv2ImageProcessing
 
     void HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg);
     void ShowCDF(CvImage& Img);
+    void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor);
 
     private:
 

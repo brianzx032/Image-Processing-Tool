@@ -342,7 +342,7 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
 
         // std::cout<<SrcCdf.at(ch)<<std::endl;
         // std::cout<<RefCdf.at(ch)<<std::endl;
-        std::cout<<refLut.at(ch)<<std::endl;
+        // std::cout<<refLut.at(ch)<<std::endl;
 
         cv::LUT(SrcCh.at(ch),refLut.at(ch),DstCh.at(ch));
     }
@@ -375,4 +375,14 @@ void cv2ImageProcessing::ShowCDF(CvImage& Img)
     }
     ShowColorHist("Pdf",Pdf);
     ShowColorHist("Cdf",Cdf);
+}
+
+void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor)
+{
+    CvImage ImgDiff;
+    cv::subtract(Img1,Img2,ImgDiff);
+    ImgDiff=ImgDiff*Factor;
+    // std::cout<<ImgDiff<<std::endl;
+    ImShow("diff",ImgDiff);
+    cv::waitKey(0);
 }

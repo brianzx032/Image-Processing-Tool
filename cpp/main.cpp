@@ -168,22 +168,40 @@ void assignment2(){
 // =================================================
 // imread
 // =================================================
-    CvImage img_orig=cv2ip.ImRead("ref4.jpg");
+    CvImage img_orig=cv2ip.ImRead("ref17.jpg");
     CvImage img_ref=cv2ip.ImRead("ref3.JPG");
     
 
 // =================================================
-// equalize
+// equalize(BGR, HSV, YUV)
 // =================================================
     // CvImage joker_eq=show_equalize_hist(joker_orig);
-    CvImage img_match,img_eq;
-    // cvtColor(img_orig,img_orig,COLOR_BGR2YUV);
-    cv2ip.ColorEqualize(img_eq,img_orig,cv2ip.USE_RGB);
+    CvImage img_match,img_eq,img_hsv,img_yuv,img_rgb;
+
+    cvtColor(img_orig,img_yuv,COLOR_BGR2YUV);
+    cv2ip.ColorEqualize(img_eq,img_yuv,cv2ip.USE_YUV);
+    cvtColor(img_eq,img_yuv,COLOR_YUV2BGR);
+
+    cvtColor(img_orig,img_hsv,COLOR_BGR2HSV);
+    cv2ip.ColorEqualize(img_eq,img_hsv,cv2ip.USE_HSV);
+    cvtColor(img_eq,img_hsv,COLOR_HSV2BGR);
+
+    cv2ip.ColorEqualize(img_rgb,img_orig,cv2ip.USE_RGB);
 // hist
-    vector<Mat> srchist;
-    cv2ip.CalcColorHist(srchist,img_orig);
+    // vector<Mat> srchist;
+    // cv2ip.CalcColorHist(srchist,img_orig);
     cv2ip.ImShow("orig",img_orig);
+    // cv2ip.ImShow("hsv_eq",img_eq);
+    cv2ip.ImShow("hsv",img_hsv);
+    cv2ip.ImShow("yuv",img_yuv);
+    cv2ip.ImShow("rgb",img_rgb);
     // cv2ip.ShowColorHist("src Hist", srchist);
+    cv::waitKey(0);
+    // cv2ip.ShowDiff(img_orig,img_hsv,10);
+
+// =================================================
+// match
+// =================================================
 // hist
     vector<Mat> dsthist;
     cv2ip.CalcColorHist(dsthist,img_eq);
