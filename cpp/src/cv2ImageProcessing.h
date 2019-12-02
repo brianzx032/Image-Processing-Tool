@@ -45,8 +45,9 @@ class cv2ImageProcessing
 
     enum CV2_COLOREQUALIZE_TYPE {USE_RGB=0, USE_HSV, USE_YUV};
     void ColorEqualize(CvImage& DstColor, const CvImage& SrcColor, const CV2_COLOREQUALIZE_TYPE Type=USE_RGB);
+    void AllChEqualize(CvImage& DstImg, const CvImage& SrcImg);
 
-    void HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg);
+    void HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg, const CV2_COLOREQUALIZE_TYPE Type=USE_RGB);
     void ShowCDF(CvImage& Img);
     void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor);
 

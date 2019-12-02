@@ -168,53 +168,80 @@ void assignment2(){
 // =================================================
 // imread
 // =================================================
-    CvImage img_orig=cv2ip.ImRead("ref17.jpg");
-    CvImage img_ref=cv2ip.ImRead("ref3.JPG");
+    CvImage img_orig=cv2ip.ImRead("ref10.jpg");
+    CvImage img_ref=cv2ip.ImRead("ref5.JPG");
+    cv2ip.ImShow("orig",img_orig);
+    cv2ip.ImShow("ref",img_ref);
     
-
 // =================================================
 // equalize(BGR, HSV, YUV)
 // =================================================
-    // CvImage joker_eq=show_equalize_hist(joker_orig);
     CvImage img_match,img_eq,img_hsv,img_yuv,img_rgb;
 
+// YUV
     cvtColor(img_orig,img_yuv,COLOR_BGR2YUV);
     cv2ip.ColorEqualize(img_eq,img_yuv,cv2ip.USE_YUV);
     cvtColor(img_eq,img_yuv,COLOR_YUV2BGR);
 
+// HSV
     cvtColor(img_orig,img_hsv,COLOR_BGR2HSV);
     cv2ip.ColorEqualize(img_eq,img_hsv,cv2ip.USE_HSV);
     cvtColor(img_eq,img_hsv,COLOR_HSV2BGR);
 
+// RGB
     cv2ip.ColorEqualize(img_rgb,img_orig,cv2ip.USE_RGB);
-// hist
-    // vector<Mat> srchist;
-    // cv2ip.CalcColorHist(srchist,img_orig);
-    cv2ip.ImShow("orig",img_orig);
-    // cv2ip.ImShow("hsv_eq",img_eq);
+
+    cv2ip.AllChEqualize(img_eq,img_orig);
+    cv2ip.ShowCDF(img_eq);
+    cv2ip.ImShow("eq",img_eq);
     cv2ip.ImShow("hsv",img_hsv);
     cv2ip.ImShow("yuv",img_yuv);
     cv2ip.ImShow("rgb",img_rgb);
+
+// hist
+    // vector<Mat> srchist;
+    // cv2ip.CalcColorHist(srchist,img_orig);
     // cv2ip.ShowColorHist("src Hist", srchist);
-    cv::waitKey(0);
     // cv2ip.ShowDiff(img_orig,img_hsv,10);
 
-// =================================================
-// match
-// =================================================
-// hist
-    vector<Mat> dsthist;
-    cv2ip.CalcColorHist(dsthist,img_eq);
-    cv2ip.ImShow("eq",img_eq);
-    cv2ip.ImWrite("img_eq.jpg",img_eq);
-    cv2ip.ShowColorHist("eq Hist", dsthist);
+    cv::waitKey(0);
 
-	// cv::waitKey(0);
-    cv2ip.ImShow("ref",img_ref);
-	// cv::waitKey(0);
-    cv2ip.HistMatching(img_match,img_orig,img_ref);
-    cv2ip.ImShow("match",img_match);
-	// cv::waitKey(0);
-    vector<CvImage> hst;
-    cv2ip.ShowCDF(img_match);
+// // =================================================
+// // rgb match
+// // =================================================
+//     cv2ip.HistMatching(img_match,img_orig,img_ref);
+//     cv2ip.ImShow("rgb match",img_match);
+//     // cv2ip.ShowCDF(img_match);
+// // =================================================
+// // hsv match
+// // =================================================
+//     CvImage img_ref_hsv;
+//     cvtColor(img_orig,img_hsv,COLOR_BGR2HSV);
+//     cvtColor(img_ref,img_ref_hsv,COLOR_BGR2HSV);
+//     cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_HSV);
+//     cvtColor(img_match,img_match,COLOR_HSV2BGR);
+//     cv2ip.ImShow("hsv_v match",img_match);
+//     // cv2ip.ShowCDF(img_match);
+
+//     cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_RGB);
+//     cvtColor(img_match,img_match,COLOR_HSV2BGR);
+//     cv2ip.ImShow("hsv match",img_match);
+//     // cv2ip.ShowCDF(img_match);
+// // =================================================
+// // yuv match
+// // =================================================
+//     CvImage img_ref_yuv;
+//     cvtColor(img_orig,img_yuv,COLOR_BGR2YUV);
+//     cvtColor(img_ref,img_ref_yuv,COLOR_BGR2YUV);
+//     cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_YUV);
+//     cvtColor(img_match,img_match,COLOR_YUV2BGR);
+//     cv2ip.ImShow("yuv_y match",img_match);
+//     // cv2ip.ShowCDF(img_match);
+
+//     cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_RGB);
+//     cvtColor(img_match,img_match,COLOR_YUV2BGR);
+//     cv2ip.ImShow("yuv match",img_match);
+//     // cv2ip.ShowCDF(img_match);
+
+//     cv::waitKey(0);
 }

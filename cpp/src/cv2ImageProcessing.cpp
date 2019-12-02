@@ -263,18 +263,63 @@ void cv2ImageProcessing::ColorEqualize(CvImage& DstColor, const CvImage& SrcColo
     cv::merge(ImgCh,DstColor);
 }
 
-void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg)
+void cv2ImageProcessing::AllChEqualize(CvImage& DstImg, const CvImage& SrcImg)
+{
+    std::vector<CvImage> SrcHist,SrcCh(3),DstCh(3);
+    CvImage SrcPdf,SrcCdf,Lut;
+    CalcColorHist(SrcHist,SrcImg);
+    cv::split(SrcImg,SrcCh);
+
+    SrcHist.at(0)=SrcHist.at(0)+SrcHist.at(1)+SrcHist.at(2);
+    int Sum = SrcImg.rows*SrcImg.cols*3;
+    SrcPdf=SrcHist.at(0)/Sum;
+    SrcCdf=SrcPdf.clone();
+
+    for(int i=1; i<256; i++)
+    {
+        SrcCdf.at<float>(i)=SrcCdf.at<float>(i-1)+SrcPdf.at<float>(i);
+    }
+    SrcCdf.convertTo(Lut,CV_8U,255); 
+    for(int ch=0; ch<3; ch++)
+    {
+        cv::LUT(SrcCh.at(ch),Lut,DstCh.at(ch));
+    }
+    cv::merge(DstCh,DstImg);
+
+}
+void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg, const CV2_COLOREQUALIZE_TYPE Type)
 {
     std::vector<CvImage> SrcHist,RefHist,SrcPdf(3),RefPdf(3),SrcCdf(3),RefCdf(3),SrcCh(3),DstCh(3),refLut(3);
     CalcColorHist(SrcHist,SrcImg);
     CalcColorHist(RefHist,RefImg);
     cv::split(SrcImg,SrcCh);
     // std::cout<<SrcCh.at(0)<<std::endl;
-    
+    int initCh=0, endCh=3;
     int SrcSum = SrcImg.rows*SrcImg.cols;
     int RefSum = RefImg.rows*RefImg.cols;
 
-    for(int ch=0; ch<3; ch++)
+    switch (Type)
+    {
+    case USE_YUV:
+        initCh=0;
+        endCh=0;//Y
+        DstCh.at(1)=SrcCh.at(1).clone();
+        DstCh.at(2)=SrcCh.at(2).clone();
+        break;
+    case USE_HSV:
+        DstCh.at(0)=SrcCh.at(0).clone();
+        DstCh.at(1)=SrcCh.at(1).clone();
+        initCh=2;
+        endCh=2;//V
+        break;
+    case USE_RGB:
+        initCh=0;
+        endCh=2;//BGR
+        break;
+    default:
+        break;
+    }
+    for(int ch=initCh; ch<=endCh; ch++)
     {
         SrcPdf.at(ch)=SrcHist.at(ch)/SrcSum;
         RefPdf.at(ch)=RefHist.at(ch)/RefSum;
@@ -299,7 +344,6 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
 
         // 构建灰度级映射表
         RefCdf.at(ch).convertTo(refLut.at(ch),CV_8U); 
-        // Mat lut(1, 256, CV_8U);
         for (int i = 0; i < 256; i++)
         {
             // 查找源灰度级为ｉ的映射灰度
@@ -348,10 +392,11 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
     }
 
     // ShowColorHist("hist",SrcHist);
-    ShowColorHist("SrcPdf",SrcPdf);
-    ShowColorHist("SrcCdf",SrcCdf);
-    ShowColorHist("RefPdf",RefPdf);
-    ShowColorHist("RefCdf",RefCdf);
+
+    // ShowColorHist("SrcPdf",SrcPdf);
+    // ShowColorHist("SrcCdf",SrcCdf);
+    // ShowColorHist("RefPdf",RefPdf);
+    // ShowColorHist("RefCdf",RefCdf);
 
     cv::merge(DstCh,DstImg);
     // showInfo(DstImg,"dst");
