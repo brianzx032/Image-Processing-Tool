@@ -206,42 +206,42 @@ void assignment2(){
 
     cv::waitKey(0);
 
-// // =================================================
-// // rgb match
-// // =================================================
-//     cv2ip.HistMatching(img_match,img_orig,img_ref);
-//     cv2ip.ImShow("rgb match",img_match);
-//     // cv2ip.ShowCDF(img_match);
-// // =================================================
-// // hsv match
-// // =================================================
-//     CvImage img_ref_hsv;
-//     cvtColor(img_orig,img_hsv,COLOR_BGR2HSV);
-//     cvtColor(img_ref,img_ref_hsv,COLOR_BGR2HSV);
-//     cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_HSV);
-//     cvtColor(img_match,img_match,COLOR_HSV2BGR);
-//     cv2ip.ImShow("hsv_v match",img_match);
-//     // cv2ip.ShowCDF(img_match);
+// =================================================
+// rgb match
+// =================================================
+    cv2ip.HistMatching(img_match,img_orig,img_ref);
+    cv2ip.ImShow("rgb match",img_match);
+    // cv2ip.ShowCDF(img_match);
+// =================================================
+// hsv match
+// =================================================
+    CvImage img_ref_hsv;
+    cvtColor(img_orig,img_hsv,COLOR_BGR2HSV);
+    cvtColor(img_ref,img_ref_hsv,COLOR_BGR2HSV);
+    cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_HSV);
+    cvtColor(img_match,img_match,COLOR_HSV2BGR);
+    cv2ip.ImShow("hsv_v match",img_match);
+    // cv2ip.ShowCDF(img_match);
 
-//     cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_RGB);
-//     cvtColor(img_match,img_match,COLOR_HSV2BGR);
-//     cv2ip.ImShow("hsv match",img_match);
-//     // cv2ip.ShowCDF(img_match);
-// // =================================================
-// // yuv match
-// // =================================================
-//     CvImage img_ref_yuv;
-//     cvtColor(img_orig,img_yuv,COLOR_BGR2YUV);
-//     cvtColor(img_ref,img_ref_yuv,COLOR_BGR2YUV);
-//     cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_YUV);
-//     cvtColor(img_match,img_match,COLOR_YUV2BGR);
-//     cv2ip.ImShow("yuv_y match",img_match);
-//     // cv2ip.ShowCDF(img_match);
+    cv2ip.HistMatching(img_match,img_hsv,img_ref_hsv,cv2ip.USE_RGB);
+    cvtColor(img_match,img_match,COLOR_HSV2BGR);
+    cv2ip.ImShow("hsv match",img_match);
+    // cv2ip.ShowCDF(img_match);
+// =================================================
+// yuv match
+// =================================================
+    CvImage img_ref_yuv;
+    cvtColor(img_orig,img_yuv,COLOR_BGR2YUV);
+    cvtColor(img_ref,img_ref_yuv,COLOR_BGR2YUV);
+    cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_YUV);
+    cvtColor(img_match,img_match,COLOR_YUV2BGR);
+    cv2ip.ImShow("yuv_y match",img_match);
+    // cv2ip.ShowCDF(img_match);
 
-//     cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_RGB);
-//     cvtColor(img_match,img_match,COLOR_YUV2BGR);
-//     cv2ip.ImShow("yuv match",img_match);
-//     // cv2ip.ShowCDF(img_match);
+    cv2ip.HistMatching(img_match,img_yuv,img_ref_yuv,cv2ip.USE_RGB);
+    cvtColor(img_match,img_match,COLOR_YUV2BGR);
+    cv2ip.ImShow("yuv match",img_match);
+    // cv2ip.ShowCDF(img_match);
 
-//     cv::waitKey(0);
+    cv::waitKey(0);
 }

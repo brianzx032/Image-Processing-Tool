@@ -1,3 +1,0 @@
-/home/brianzx/CV_Projects/cpp/gtk_test/CMakeFiles/edit_cache.dir
-/home/brianzx/CV_Projects/cpp/gtk_test/CMakeFiles/rebuild_cache.dir
-/home/brianzx/CV_Projects/cpp/gtk_test/CMakeFiles/hello.dir
