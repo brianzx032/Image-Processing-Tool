@@ -39,12 +39,20 @@ void cv2ImageProcessing::ImShow(const std::string& winname, CvImage& cvImg)
 }
 
 // resize
-void cv2ImageProcessing::Resize(CvImage& newImg1, CvImage& newImg2, const CvImage& SrcImg1, const CvImage& SrcImg2)
+void cv2ImageProcessing::Resize(CvImage& newImg1, CvImage& newImg2, const CvImage& SrcImg1, const CvImage& SrcImg2, bool MaxSize)
 {
     int rows, cols;
-    rows = std::max(SrcImg1.rows,SrcImg2.rows);
-    cols = std::max(SrcImg1.cols,SrcImg2.cols);
-
+    if(MaxSize)
+    {
+        rows = std::max(SrcImg1.rows,SrcImg2.rows);
+        cols = std::max(SrcImg1.cols,SrcImg2.cols);
+    }
+    else
+    {
+        rows = std::min(SrcImg1.rows,SrcImg2.rows);
+        cols = std::min(SrcImg1.cols,SrcImg2.cols);
+    }
+    
     newImg1.create(rows, cols, CV_8U);
     newImg2.create(rows, cols, CV_8U);
     
@@ -190,7 +198,7 @@ void cv2ImageProcessing::CalcColorHist(std::vector<CvImage>& ColorHist, const Cv
 	
 
 }
-void cv2ImageProcessing::ShowColorHist(const std::string& winname, const std::vector<CvImage>& ColorHist)
+void cv2ImageProcessing::ShowColorHist(CvImage& HistImg, const std::vector<CvImage>& ColorHist)
 {
 
 	CvImage b_hist, g_hist, r_hist;
@@ -219,6 +227,12 @@ void cv2ImageProcessing::ShowColorHist(const std::string& winname, const std::ve
 		line(histImage, cv::Point((i - 1)*bin_w, hist_h - cvRound(r_hist.at<float>(i - 1))),
 			cv::Point((i)*bin_w, hist_h - cvRound(r_hist.at<float>(i))), cv::Scalar(0, 0, 255), 2, CV_AA);
 	}
+    HistImg=histImage.clone();
+}
+void cv2ImageProcessing::ShowColorHist(const std::string& winname, const std::vector<CvImage>& ColorHist)
+{
+    CvImage histImage;
+    ShowColorHist(histImage,ColorHist);
     cv::namedWindow(winname,CV_WINDOW_AUTOSIZE);
 	ImShow(winname, histImage);
 	cv::waitKey(0);
@@ -403,6 +417,82 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
     // std::cout<<DstImg<<std::endl;
 }
 
+void cv2ImageProcessing::HistMatchAll(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg)
+{
+    std::vector<CvImage> SrcHist,RefHist,SrcCh(3),DstCh(3);
+    CvImage SrcPdf, SrcCdf, RefPdf, RefCdf, refLut;
+    CalcColorHist(SrcHist,SrcImg);
+    CalcColorHist(RefHist,RefImg);
+    cv::split(SrcImg,SrcCh);
+    SrcHist.at(0)=SrcHist.at(0)+SrcHist.at(1)+SrcHist.at(2);
+    RefHist.at(0)=RefHist.at(0)+RefHist.at(1)+RefHist.at(2);
+    // std::cout<<SrcCh.at(0)<<std::endl;
+    int SrcSum = SrcImg.rows*SrcImg.cols*3;
+    int RefSum = RefImg.rows*RefImg.cols*3;
+
+    SrcPdf=SrcHist.at(0)/SrcSum;
+    RefPdf=RefHist.at(0)/RefSum;
+        
+    SrcCdf=SrcPdf.clone();
+    RefCdf=RefPdf.clone();
+        
+    for(int i=1; i<256; i++)
+    {
+        SrcCdf.at<float>(i)=SrcCdf.at<float>(i-1)+SrcPdf.at<float>(i);
+        RefCdf.at<float>(i)=RefCdf.at<float>(i-1)+RefPdf.at<float>(i);
+    }
+    // 累积概率的差值
+    float diff_cdf[256][256];
+    for (int i = 0; i < 256; i++)
+        for (int j = 0; j < 256; j++)
+            diff_cdf[i][j] = fabs(SrcCdf.at<float>(i) - RefCdf.at<float>(j));
+
+    // 构建灰度级映射表
+    RefCdf.convertTo(refLut,CV_8U); 
+    for (int i = 0; i < 256; i++)
+    {
+        // 查找源灰度级为ｉ的映射灰度
+        //　和ｉ的累积概率差值最小的规定化灰度
+        float min = diff_cdf[i][0];
+        int index = 0;
+        for (int j = 1; j < 256; j++)
+        {
+            if (min > diff_cdf[i][j])
+            {
+                min = diff_cdf[i][j];
+                index = j;
+            }
+        }
+        refLut.at<uchar>(i) = static_cast<uchar>(index);
+    }
+
+    for(int ch=0; ch<3; ch++)
+    {
+        cv::LUT(SrcCh.at(ch),refLut,DstCh.at(ch));
+    }
+    cv::merge(DstCh,DstImg);
+    
+}
+
+void cv2ImageProcessing::ShowCDF(CvImage& Img, CvImage& Pdf_img, CvImage& Cdf_img)
+{
+    std::vector<CvImage> Hist,Pdf(3),Cdf(3);
+    CalcColorHist(Hist,Img);
+    
+    int pixelSum = Img.rows*Img.cols;
+
+    for(int ch=0; ch<3; ch++)
+    {
+        Pdf.at(ch)=Hist.at(ch)/pixelSum;
+        Cdf.at(ch)=Pdf.at(ch).clone();
+        
+        for(int i=1; i<256; i++)
+            Cdf.at(ch).at<float>(i)=Cdf.at(ch).at<float>(i-1)+Pdf.at(ch).at<float>(i);
+    }
+    ShowColorHist(Pdf_img,Pdf);
+    ShowColorHist(Cdf_img,Cdf);
+
+}
 void cv2ImageProcessing::ShowCDF(CvImage& Img)
 {
     std::vector<CvImage> Hist,Pdf(3),Cdf(3);

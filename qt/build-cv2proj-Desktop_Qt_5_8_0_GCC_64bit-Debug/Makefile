@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../cv2proj -I. -I../../../Qt5.8.0/5.8/gcc_64/include -I../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets -I../../../Qt5.8.0/5.8/gcc_64/include/QtGui -I../../../Qt5.8.0/5.8/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../cv2proj -I. -isystem /usr/local/include -isystem /usr/local/include/opencv -isystem /usr/local/include/opencv2 -I../../../Qt5.8.0/5.8/gcc_64/include -I../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets -I../../../Qt5.8.0/5.8/gcc_64/include/QtGui -I../../../Qt5.8.0/5.8/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/brianzx/Qt5.8.0/5.8/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -36,7 +36,7 @@ DISTNAME      = cv2proj1.0.0
 DISTDIR = /home/brianzx/CV_Projects/qt/build-cv2proj-Desktop_Qt_5_8_0_GCC_64bit-Debug/.tmp/cv2proj1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/brianzx/Qt5.8.0/5.8/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/brianzx/Qt5.8.0/5.8/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) /usr/local/lib/libopencv_highgui.so /usr/local/lib/libopencv_core.so /usr/local/lib/libopencv_imgproc.so -L/home/brianzx/Qt5.8.0/5.8/gcc_64/lib -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -203,6 +203,7 @@ DIST          = ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		../cv2proj/.qmake.stash \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -385,6 +386,7 @@ Makefile: ../cv2proj/cv2proj.pro ../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/q
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -559,6 +561,7 @@ Makefile: ../cv2proj/cv2proj.pro ../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/q
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/qt_config.prf:
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/toolchain.prf:
 ../../../Qt5.8.0/5.8/gcc_64/mkspecs/features/default_pre.prf:
@@ -741,7 +744,7 @@ moc_mainwindow.cpp: ../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		../cv2proj/mainwindow.h \
 		moc_predefs.h \
 		../../../Qt5.8.0/5.8/gcc_64/bin/moc
-	/home/brianzx/Qt5.8.0/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/brianzx/Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++ -I/home/brianzx/CV_Projects/qt/cv2proj -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtWidgets -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtGui -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../cv2proj/mainwindow.h -o moc_mainwindow.cpp
+	/home/brianzx/Qt5.8.0/5.8/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/brianzx/Qt5.8.0/5.8/gcc_64/mkspecs/linux-g++ -I/home/brianzx/CV_Projects/qt/cv2proj -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtWidgets -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtGui -I/home/brianzx/Qt5.8.0/5.8/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../cv2proj/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -981,7 +984,58 @@ mainwindow.o: ../cv2proj/mainwindow.cpp ../cv2proj/mainwindow.h \
 		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qicon.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/QVariant \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QAction \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qaction.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QButtonGroup \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qbuttongroup.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qcheckbox.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QGraphicsView \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qpainter.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qpen.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QHeaderView \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qheaderview.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractitemview.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qabstractitemmodel.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qitemselectionmodel.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qstyleoption.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtGui/qvalidator.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtCore/qregularexpression.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qslider.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qabstractslider.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qstyle.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qtabbar.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qrubberband.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QMenuBar \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qmenubar.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qmenu.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QSlider \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QStatusBar \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qstatusbar.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QToolBar \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/qtoolbar.h \
+		../../../Qt5.8.0/5.8/gcc_64/include/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../cv2proj/mainwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

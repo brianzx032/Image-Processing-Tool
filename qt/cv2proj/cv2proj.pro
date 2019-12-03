@@ -7,7 +7,9 @@
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+#QMAKE_CXXFLAGS += -std=c++11
+#CONIFG += c++11
+#-D_GLIBCXX_USE_CXX11_ABI=0
 TARGET = cv2proj
 TEMPLATE = app
 
@@ -23,11 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    cv2ImageProcessing.cpp
+INCLUDEPATH += /usr/local/include \
+                /usr/local/include/opencv \
+                /usr/local/include/opencv2
 
-HEADERS  += mainwindow.h \
-    cv2ImageProcessing.h
+LIBS += /usr/local/lib/libopencv_highgui.so \
+        /usr/local/lib/libopencv_core.so    \
+        /usr/local/lib/libopencv_imgproc.so
+
+SOURCES += main.cpp\
+        mainwindow.cpp
+
+HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
