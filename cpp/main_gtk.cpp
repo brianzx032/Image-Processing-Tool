@@ -37,6 +37,7 @@ static void ref_enter_callback( GtkWidget *widget, GtkWidget *entry );
 GError** err = NULL;
 
 // filename
+char src_dir[]="./img/src/";
 char img_dir[]="./img/output/";
 char pdf_dir[]="./img/pdf/pdf_";
 char cdf_dir[]="./img/cdf/cdf_";
@@ -376,8 +377,8 @@ static void orig_enter_callback( GtkWidget *widget,
   const gchar *entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
   strcpy(orig_name,entry_text);
-  img_orig=cv2ip.ImRead(orig_name);
-  orig_widg.pixbuf = gdk_pixbuf_new_from_file_at_size(orig_name,800,400,err);
+  img_orig=cv2ip.ImRead(comb_char(src_dir,orig_name));
+  orig_widg.pixbuf = gdk_pixbuf_new_from_file_at_size(comb_char(src_dir,orig_name),800,400,err);
   gtk_image_set_from_pixbuf(GTK_IMAGE(orig_widg.image),orig_widg.pixbuf);
   cv2ip.ShowCDF(img_orig,orig_widg.pdf_cvImg,orig_widg.cdf_cvImg);
   cv2ip.ImWrite(comb_char(pdf_dir,orig_name),orig_widg.pdf_cvImg);
@@ -394,8 +395,8 @@ static void ref_enter_callback( GtkWidget *widget,
   const gchar *entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
   strcpy(ref_name,entry_text);
-  img_ref=cv2ip.ImRead(ref_name);
-  ref_widg.pixbuf = gdk_pixbuf_new_from_file_at_size(ref_name,800,400,err);
+  img_ref=cv2ip.ImRead(comb_char(src_dir,ref_name));
+  ref_widg.pixbuf = gdk_pixbuf_new_from_file_at_size(comb_char(src_dir,ref_name),800,400,err);
   gtk_image_set_from_pixbuf(GTK_IMAGE(ref_widg.image),ref_widg.pixbuf);
   cv2ip.ShowCDF(img_ref,ref_widg.pdf_cvImg,ref_widg.cdf_cvImg);
   cv2ip.ImWrite(comb_char(pdf_dir,ref_name),ref_widg.pdf_cvImg);
