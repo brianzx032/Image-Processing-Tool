@@ -53,6 +53,7 @@ class cv2ImageProcessing
     void ShowCDF(CvImage& Img);
     void ShowCDF(CvImage& Img, CvImage& Pdf_img, CvImage& Cdf_img);
     void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor);
+    void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor, const std::string& filename);
 
     private:
 

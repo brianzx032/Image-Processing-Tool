@@ -521,3 +521,10 @@ void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor)
     ImShow("diff",ImgDiff);
     cv::waitKey(0);
 }
+void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor,const std::string& filename)
+{
+    CvImage ImgDiff;
+    cv::subtract(Img1,Img2,ImgDiff);
+    ImgDiff=ImgDiff*Factor;
+    ImWrite(filename,ImgDiff);
+}
