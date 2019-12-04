@@ -2,7 +2,9 @@
 for digital image procesing
 
 =========================
+
  use following commands:
+
 =========================
 
 cd cpp
@@ -15,8 +17,11 @@ make
 
 
 =============================
+
 	directory tree
+
 =============================
+'''
 .
 ├── cpp
 │   ├── CMakeCache.txt
@@ -218,3 +223,4 @@ make
 └── README.md
 
 18 directories, 180 files
+'''
