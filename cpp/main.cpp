@@ -9,6 +9,8 @@ using namespace std;
 cv2ImageProcessing cv2ip;
 
 char* comb_char(char* ch1, char* ch2);
+// char* comb_char(char* ch1, char* ch2, char* ch3);
+// char* comb_char(char* ch1, char* ch2, char* ch3, char* ch4);
 
 /*Signal handler for the "clicked" signal of the EQ RadioButton*/
 static void eq_rgb_tog_clicked (GtkWidget *button, gpointer   user_data);
@@ -415,3 +417,23 @@ char* comb_char(char* ch1, char* ch2)
   strcat(ret_ch,ch2);
   return ret_ch;
 }
+
+// char* comb_char(char* ch1, char* ch2, char* ch3)
+// {
+//   char* ret_ch=new char[strlen(ch1)+strlen(ch2)+strlen(ch3)+1];// need integration
+//   strcpy(ret_ch,ch1);
+//   strcat(ret_ch,ch2);
+//   strcat(ret_ch,ch3);
+//   return ret_ch;
+
+// }
+// char* comb_char(char* ch1, char* ch2, char* ch3, char* ch4)
+// {
+//   char* ret_ch=new char[strlen(ch1)+strlen(ch2)+strlen(ch3)+strlen(ch4)+1];// need integration
+//   strcpy(ret_ch,ch1);
+//   strcat(ret_ch,ch2);
+//   strcat(ret_ch,ch3);
+//   strcat(ret_ch,ch4);
+//   return ret_ch;
+
+// }
