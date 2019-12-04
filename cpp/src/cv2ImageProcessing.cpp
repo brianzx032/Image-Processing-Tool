@@ -347,9 +347,6 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
             RefCdf.at(ch).at<float>(i)=RefCdf.at(ch).at<float>(i-1)+RefPdf.at(ch).at<float>(i);
         }
 
-        // RefCdf.at(ch).convertTo(refLut.at(ch),CV_8U,255); 
-        
-
         // 累积概率的差值
         float diff_cdf[256][256];
         for (int i = 0; i < 256; i++)
@@ -517,7 +514,6 @@ void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor)
     CvImage ImgDiff;
     cv::subtract(Img1,Img2,ImgDiff);
     ImgDiff=ImgDiff*Factor;
-    // std::cout<<ImgDiff<<std::endl;
     ImShow("diff",ImgDiff);
     cv::waitKey(0);
 }
