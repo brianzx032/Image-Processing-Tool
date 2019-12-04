@@ -190,7 +190,7 @@ make
 │   │       ├── rgb 7match3.png
 │   │       └── yuv 23match15.png
 │   ├── main.cpp
-│   ├── main_gtk.cpp
+│   ├── main_terminal.cpp
 │   ├── Makefile
 │   ├── MyCvProject
 │   └── src
