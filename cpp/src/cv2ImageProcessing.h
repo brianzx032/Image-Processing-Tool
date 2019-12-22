@@ -1,6 +1,7 @@
 #ifndef CV2IMAGEPROCESSING_H
 #define CV2IMAGEPROCESSING_H
 #include <vector>
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -26,8 +27,8 @@ class cv2ImageProcessing
     void Resize(CvImage& newImg1, CvImage& newImg2, const CvImage& SrcImg1, const CvImage& SrcImg2, bool MaxSize);
     void SplitAlpha(CvImage& Foreground, CvImage& Alpha, const CvImage& SrcImg);
 
-    CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha, int code);
     CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha);
+    void BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y);
 
     // BGR ==> Gray
     void ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg);
@@ -52,10 +53,34 @@ class cv2ImageProcessing
     void HistMatchAll(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg);
     void ShowCDF(CvImage& Img);
     void ShowCDF(CvImage& Img, CvImage& Pdf_img, CvImage& Cdf_img);
-    void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor);
-    void ShowDiff(CvImage& Img1,CvImage& Img2,int Factor, const std::string& filename);
+    void ShowDiff(CvImage& Img1,CvImage& Img2,double Factor);
+    void ShowDiff(CvImage& Img1,CvImage& Img2,double Factor, const std::string& filename);
+
+    enum CV2_IMSMOOTH_TYPE{BLUR=0,BOX,GAUSSIAN,MEDIAN,BILATERAL};
+    void Smooth2D(CvImage& DstImg, const CvImage& SrcImg, int ksize=15, const CV2_IMSMOOTH_TYPE Type=BLUR);
+
+    enum CV2_EDGEDETECT_TYPE{SOBEL=0,CANNY,SCHARR,LAPLACE,ROBERTS,PREWITT,KIRSCH};
+    void EdgeDetect(CvImage& DstImg, const CvImage& SrcImg, const CV2_EDGEDETECT_TYPE Type=SOBEL);
+
+    void Conv2D(CvImage& DstImg, const CvImage& SrcImg, const CvImage& Kernel);
+    std::vector<CvImage> GetRobertsKernel() const;
+    std::vector<CvImage> GetPrewittKernel() const;
+    std::vector<CvImage> GetKirschKernel() const;
+
+    enum CV2_SHARPENING_TYPE {LAPLACE_TYPE1 = 0, LAPLACE_TYPE2, SECOND_ORDER_LOG, UNSHARP_MASK};
+    void ImSharpening(CvImage& DstImg, const CvImage& SrcImg, const CV2_SHARPENING_TYPE Type1 = LAPLACE_TYPE1, const CV2_IMSMOOTH_TYPE Type2 = BILATERAL);
+
+    int kernel_size=3;
+    double landa=1.5;
+    double canny_threshold1=50, canny_threshold2=50;
 
     private:
+    std::vector<CvImage> m_RobertsKernel;
+    std::vector<CvImage> m_PrewittKernel;
+    std::vector<CvImage> m_KirschKernel;
+    void InitRobertsKernel();
+    void InitPrewittKernel();
+    void InitKirschKernel();
 
 };
 #endif

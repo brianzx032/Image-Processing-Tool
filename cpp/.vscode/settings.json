@@ -54,6 +54,11 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "random": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "condition_variable": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "memory_resource": "cpp",
+        "set": "cpp"
     }
 }

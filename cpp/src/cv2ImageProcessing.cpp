@@ -1,15 +1,16 @@
 #include "cv2ImageProcessing.h"
-#include <iostream>
-#include <vector>
 
 // Constructor & Deconstructor
 cv2ImageProcessing::cv2ImageProcessing(void)
 {
-    std::cout << "Object is being created" << std::endl;
+    InitRobertsKernel();
+    InitPrewittKernel();
+    InitKirschKernel();
+    std::cout << "cv2ImageProcessing is being created" << std::endl;
 }
 cv2ImageProcessing::~cv2ImageProcessing(void)
 {
-    std::cout << "Object is being deleted" << std::endl;
+    std::cout << "cv2ImageProcessing is being deleted" << std::endl;
 }
 
 // show image infomation
@@ -76,12 +77,10 @@ void cv2ImageProcessing::SplitAlpha(CvImage& Foreground, CvImage& Alpha, const C
     channels_src.at(3).copyTo(Alpha);
 }
 
-CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha, int code)
+CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha)
 {
     CvImage fore, back, alph, out_img,al;
     std::vector<CvImage> alph_mask;
-
-    // std::cout<<Foreground<<std::endl;
     
     Foreground.convertTo(fore, CV_8U);
     Background.convertTo(back, CV_8U);
@@ -92,39 +91,40 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     alph_mask.push_back(alph);
     cv::merge(alph_mask, alph);
 
-
     out_img=CvImage::zeros(fore.size(),fore.type());
-    
-    // alph.convertTo(al,CV_32FC3,255);
-    // ImShow("alpha", al); 
-    // cv::waitKey(0); 
-    // ImShow("back", back); 
-    // cv::waitKey(0); 
-    if (code!=NoCvt)
-    {
-        cv::cvtColor(fore,fore,code);
-        ImShow("processing", fore); 
-        cv::waitKey(0); 
-    }
     
     cv::multiply(alph, fore, fore);
     cv::multiply(cv::Scalar::all(1.0)-alph, back, back);
     cv::add(fore, back, out_img);
-
-    // ImShow("alpha", alph); 
-    // cv::waitKey(0); 
-    // ImShow("fore", fore); 
-    // cv::waitKey(0); 
-    // ImShow("back", back); 
-    // cv::waitKey(0); 
-    // std::cout<<out_img<<std::endl;
     return out_img;
 }
 
-CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha)
+void cv2ImageProcessing::BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y)
 {
-    return AlphaBlend(Foreground,Background,Alpha,NoCvt);
+    CvImage Fg_taget, ForeImg, AlphaImg, BackImg;
+    
+    /* resize foreground image */
+    Fg_taget.create(height,width,CV_8U);
+    cv::resize(FgImg,Fg_taget,Fg_taget.size());
+
+    /* split image and alpha */
+    SplitAlpha(ForeImg,AlphaImg,Fg_taget);
+
+    /* set roi */
+    BgImg.copyTo(DstImg);
+    CvImage roiImg = DstImg(cv::Rect(x,y,Fg_taget.cols,Fg_taget.rows));
+    BackImg=roiImg.clone();
+
+    /* resize */
+    CvImage Fg_resized, Bg_resized, Al_resized;
+    Resize(Fg_resized,Bg_resized,ForeImg,BackImg,true);
+    Resize(Fg_resized,Al_resized,ForeImg,AlphaImg,true);
+
+    /* blend */
+    CvImage blendImg=AlphaBlend(Fg_resized,Bg_resized,Al_resized);
+    blendImg.copyTo(roiImg);
 }
+
 // convert BGR => Gray
 void cv2ImageProcessing::ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg)
 {
@@ -132,31 +132,21 @@ void cv2ImageProcessing::ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg)
 }
 CvImage cv2ImageProcessing::ImBGR2Gray(const CvImage& SrcImg)
 {
-    CvImage DstImg;
-    
-    // std::cout<<SrcImg<<std::endl;
+    CvImage DstImg;    
     cv::cvtColor(SrcImg,DstImg,CV_BGR2GRAY);
-    // std::cout<<DstImg<<std::endl;
     return DstImg;
 }
 
 // Gray Hist
 void cv2ImageProcessing::CalcGrayHist(CvImage& GrayHist, const CvImage& SrcGray)
 {
-    // CvImage shwimg=SrcGray.clone();
-    // ImShow("x", shwimg); 
-    // cv::waitKey(0); 
-    // std::cout<<SrcGray<<std::endl;
     const int *histChannel = 0, histSize = 256;
     float ranges[]={0,256};
     const float *hstranges={ranges};
     // rearrange
     CvImage src;
-    // SrcGray.convertTo(src,CV_32FC3, 255);
     SrcGray.convertTo(src,CV_8U);
-    // std::cout<<src<<std::endl;
     cv::calcHist(&src,1,histChannel,CvImage(),GrayHist,1,&histSize,&hstranges,true,false);
-    // std::cout<<GrayHist<<std::endl<<std::endl;
 }
 void cv2ImageProcessing::ShowGrayHist(const std::string& winname, const CvImage& GrayHist)
 {
@@ -375,46 +365,10 @@ void cv2ImageProcessing::HistMatching(CvImage& DstImg, const CvImage& SrcImg, co
             refLut.at(ch).at<uchar>(i) = static_cast<uchar>(index);
         }
 
-        
-        
-        // SrcCdf.at(ch).convertTo(SrcCdf.at(ch),CV_8U,255); 
-        // RefCdf.at(ch).convertTo(RefCdf.at(ch),CV_8U,255); 
-        // int Sval,Rval,Ridx=0;
-        // // refLut.at(ch).at<uchar>(0)=0;
-        // for(int i=0; i<256; i++)
-        // {
-        //     Sval=SrcCdf.at(ch).at<uchar>(i);
-        //     for(int j=0; j<256; j++)
-        //     {
-        //         Rval=RefCdf.at(ch).at<uchar>(j);
-        //         if(Sval==Rval)
-        //         {
-        //             Ridx=j;
-        //             break;
-        //         }
-        //     }
-        //     std::cout<<Ridx<<std::endl;
-        //     refLut.at(ch).at<uchar>(i)==static_cast<uchar>(Ridx);
-        // }
-
-
-        // std::cout<<SrcCdf.at(ch)<<std::endl;
-        // std::cout<<RefCdf.at(ch)<<std::endl;
-        // std::cout<<refLut.at(ch)<<std::endl;
 
         cv::LUT(SrcCh.at(ch),refLut.at(ch),DstCh.at(ch));
     }
-
-    // ShowColorHist("hist",SrcHist);
-
-    // ShowColorHist("SrcPdf",SrcPdf);
-    // ShowColorHist("SrcCdf",SrcCdf);
-    // ShowColorHist("RefPdf",RefPdf);
-    // ShowColorHist("RefCdf",RefCdf);
-
     cv::merge(DstCh,DstImg);
-    // showInfo(DstImg,"dst");
-    // std::cout<<DstImg<<std::endl;
 }
 
 void cv2ImageProcessing::HistMatchAll(CvImage& DstImg, const CvImage& SrcImg, const CvImage& RefImg)
@@ -512,19 +466,238 @@ void cv2ImageProcessing::ShowCDF(CvImage& Img)
     ShowColorHist("Cdf",Cdf);
 }
 
-void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor)
+void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,double Factor)
 {
     CvImage ImgDiff;
     cv::subtract(Img1,Img2,ImgDiff);
-    ImgDiff=ImgDiff*Factor;
-    // std::cout<<ImgDiff<<std::endl;
+    ImgDiff=abs(ImgDiff)*Factor;
     ImShow("diff",ImgDiff);
     cv::waitKey(0);
 }
-void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,int Factor,const std::string& filename)
+void cv2ImageProcessing::ShowDiff(CvImage& Img1,CvImage& Img2,double Factor,const std::string& filename)
 {
     CvImage ImgDiff;
     cv::subtract(Img1,Img2,ImgDiff);
-    ImgDiff=ImgDiff*Factor;
+    ImgDiff=abs(ImgDiff)*Factor;
+    // std::cout<<sum(ImgDiff)<<std::endl;    
     ImWrite(filename,ImgDiff);
+}
+
+void cv2ImageProcessing::Smooth2D(CvImage& DstImg, const CvImage& SrcImg, int ksize, const CV2_IMSMOOTH_TYPE Type)
+{
+    switch (Type)
+    {
+    case BLUR:
+        cv::blur(SrcImg,DstImg,cv::Size(ksize,ksize));
+        break;
+
+    case BOX:
+        // int ddepth: 输出图像的深度，-1代表使用原图深度，即src.depth()
+        cv::boxFilter(SrcImg,DstImg,-1,cv::Size(ksize,ksize));
+        break;
+
+    case GAUSSIAN:
+        // double sigmaX: 表示高斯核函数在X方向的标准偏差。
+        // double sigmaY: 表示高斯核函数在Y方向的标准偏差。
+        // 当sigmaY为0时，就将其设为sigmaX；如果两者均为0，则由ksize.with和ksize.height计算出来，
+        // 因此在高斯滤波函数中，ksize的w和h均必须是正数和奇数，或0，两者可以不同。
+        cv::GaussianBlur(SrcImg,DstImg,cv::Size(ksize,ksize),0,0);
+        break;
+
+    case MEDIAN:
+        cv::medianBlur(SrcImg,DstImg,ksize);
+        break;
+
+    case BILATERAL:
+        // double sigmaColor:
+        // 颜色空间滤波器的sigma值，这个参数的值越大，就表明该像素邻域内有越宽广的颜色会被混合到一起，产生较大的半相等颜色区域。
+        // double sigmaSpace:
+        // 坐标空间中滤波器的sigma值，坐标空间的标注方差。它的数值越大，意味着越远的像素会相互影响，从而使更大的区域中足够相似的颜色获取相同的颜色。
+        // 当d>0时，d制定了邻域大小与sigmaSpace无关。否则，d正比于sigmaSpace。
+        cv::bilateralFilter(SrcImg,DstImg,ksize,ksize*2,ksize/2);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void cv2ImageProcessing::EdgeDetect(CvImage& DstImg, const CvImage& SrcImg, const CV2_EDGEDETECT_TYPE Type)
+{
+    CvImage DstX,DstY;
+    std::vector<CvImage> kernel,cannyDst;
+    switch (Type)
+    {
+    case SOBEL:
+        cv::Sobel(SrcImg,DstX,-1,1,0);
+        cv::Sobel(SrcImg,DstY,-1,0,1);
+        DstImg=(abs(DstX)+abs(DstY))/2;
+        break;
+    
+    case CANNY:
+        cv::Canny(SrcImg,DstImg,canny_threshold1,canny_threshold2);//threshold1 threshold2
+        for(int i =0; i<3; i++)
+        {
+            cannyDst.push_back(DstImg);
+        }
+        cv::merge(cannyDst, DstImg);
+        break;
+    
+    case SCHARR:
+        cv::Scharr(SrcImg,DstX,-1,1,0);
+        cv::Scharr(SrcImg,DstY,-1,0,1);
+        DstImg=(abs(DstX)+abs(DstY))/2;
+        break;
+    
+    case LAPLACE:
+        cv::Laplacian(SrcImg,DstImg,-1,std::min(kernel_size,31));
+        break;
+
+    case ROBERTS:
+        kernel=GetRobertsKernel();
+        Conv2D(DstX,SrcImg,kernel[0]);
+        Conv2D(DstY,SrcImg,kernel[1]);
+        DstImg=(abs(DstX)+abs(DstY))/2;
+        // DstImg=cv::max(DstX,DstY);
+        break;
+    
+    case PREWITT:
+        kernel=GetPrewittKernel();
+        Conv2D(DstX,SrcImg,kernel[0]);
+        Conv2D(DstY,SrcImg,kernel[1]);
+        DstImg=(abs(DstX)+abs(DstY))/2;
+        break;
+    
+    case KIRSCH:
+        kernel=GetKirschKernel();
+        Conv2D(DstImg,SrcImg,kernel[0]);
+        for(int i=1;i<8;i++)
+        {
+            Conv2D(DstX,SrcImg,kernel[i]);
+            DstImg=cv::max(DstImg,DstX);
+        }
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void cv2ImageProcessing::Conv2D(CvImage& DstImg, const CvImage& SrcImg, const CvImage& Kernel)
+{
+    cv::filter2D(SrcImg,DstImg,-1,Kernel);
+}
+
+void cv2ImageProcessing::InitRobertsKernel()
+{
+    CvImage kernel_x = (cv::Mat_<char>(2,2) <<  1, 0,
+                                                0, -1);
+    CvImage kernel_y = (cv::Mat_<char>(2,2) <<  0, 1,
+                                                -1, 0);
+    m_RobertsKernel.push_back(kernel_x);
+    m_RobertsKernel.push_back(kernel_y);
+}
+void cv2ImageProcessing::InitPrewittKernel()
+{
+    CvImage kernel_x = (cv::Mat_<char>(3,3) <<  -1, 0, 1,
+                                                -1, 0, 1,
+                                                -1, 0, 1);
+    CvImage kernel_y = (cv::Mat_<char>(3,3) <<  -1, -1, -1,
+                                                 0,  0,  0,
+                                                 1,  1,  1);
+    m_PrewittKernel.push_back(kernel_x);
+    m_PrewittKernel.push_back(kernel_y);
+}
+void cv2ImageProcessing::InitKirschKernel()
+{
+    CvImage kernel_w = (cv::Mat_<char>(3,3) <<  5, -3, -3,
+                                                5,  0, -3,
+                                                5, -3, -3);
+    CvImage kernel_sw = (cv::Mat_<char>(3,3) << -3, -3, -3,
+                                                5,  0, -3,
+                                                5,  5, -3);
+    CvImage kernel_s = (cv::Mat_<char>(3,3) <<  -3, -3, -3,
+                                                -3,  0, -3,
+                                                5, 5, 5);
+    CvImage kernel_se = (cv::Mat_<char>(3,3) << -3, -3, -3,
+                                                -3,  0, 5,
+                                                -3,  5, 5);
+    CvImage kernel_e = (cv::Mat_<char>(3,3) <<  -3, -3, 5,
+                                                -3,  0, 5,
+                                                -3, -3, 5);
+    CvImage kernel_ne = (cv::Mat_<char>(3,3) << -3, 5, 5,
+                                                -3, 0, 5,
+                                                -3, -3, -3);
+    CvImage kernel_n = (cv::Mat_<char>(3,3) <<  5, 5, 5,
+                                                -3,  0, -3,
+                                                -3, -3, -3);
+    CvImage kernel_nw = (cv::Mat_<char>(3,3) << 5, 5, -3,
+                                                5, 0, -3,
+                                                -3, -3, -3);
+    m_KirschKernel.push_back(kernel_w);
+    m_KirschKernel.push_back(kernel_sw);
+    m_KirschKernel.push_back(kernel_s);
+    m_KirschKernel.push_back(kernel_se);
+    m_KirschKernel.push_back(kernel_e);
+    m_KirschKernel.push_back(kernel_ne);
+    m_KirschKernel.push_back(kernel_n);
+    m_KirschKernel.push_back(kernel_nw);
+}
+
+
+void cv2ImageProcessing::ImSharpening(CvImage& DstImg, const CvImage& SrcImg, const CV2_SHARPENING_TYPE Type1, const CV2_IMSMOOTH_TYPE Type2)
+{
+    CvImage LapKern_type1 = (cv::Mat_<char>(3,3) <<  0,-1, 0,
+                                                    -1, 4,-1,
+                                                     0,-1, 0);
+    CvImage LapKern_type2 = (cv::Mat_<char>(3,3) << -1,-1,-1,
+                                                    -1, 8,-1,
+                                                    -1,-1,-1);
+    CvImage LoG_Kern = (cv::Mat_<char>(5,5) <<  0, 0, 1, 0, 0,
+                                                0, 1, 2, 1, 0,
+                                                1, 2,-16,2, 1,
+                                                0, 1, 2, 1, 0,
+                                                0, 0, 1, 0, 0);
+    CvImage coarse, fine;
+    switch (Type1)
+    {
+    case LAPLACE_TYPE1:
+        Conv2D(fine,SrcImg,LapKern_type1);
+        DstImg=SrcImg+fine*landa;
+        break;
+
+    case LAPLACE_TYPE2:
+        Conv2D(fine,SrcImg,LapKern_type2);
+        DstImg=SrcImg+fine*landa;
+        break;
+
+    case SECOND_ORDER_LOG:
+        Conv2D(fine,SrcImg,LoG_Kern);
+        DstImg=SrcImg+fine*landa;
+        break;
+    
+    case UNSHARP_MASK:
+        Smooth2D(coarse,SrcImg,kernel_size,Type2);
+        fine=SrcImg-coarse;
+        // ImShow("fine",fine);
+        DstImg=coarse+fine*landa;
+        break;
+    
+    default:
+        break;
+    }
+    
+}
+
+std::vector<CvImage> cv2ImageProcessing::GetRobertsKernel() const
+{
+    return m_RobertsKernel;
+}
+std::vector<CvImage> cv2ImageProcessing::GetPrewittKernel() const
+{
+    return m_PrewittKernel;
+}
+std::vector<CvImage> cv2ImageProcessing::GetKirschKernel() const
+{
+    return m_KirschKernel;
 }
