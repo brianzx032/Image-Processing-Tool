@@ -28,7 +28,7 @@ class cv2ImageProcessing
     void SplitAlpha(CvImage& Foreground, CvImage& Alpha, const CvImage& SrcImg);
 
     CvImage AlphaBlend(const CvImage& Foreground, const CvImage& Background, const CvImage& Alpha);
-    void BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y);
+    void BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y, double transparent);
 
     // BGR ==> Gray
     void ImBGR2Gray(CvImage& DstImg, const CvImage& SrcImg);

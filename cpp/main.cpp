@@ -65,6 +65,7 @@ static void width_changed (GtkWidget *widget, gpointer data);
 static void height_changed (GtkWidget *widget, gpointer data);
 static void x_changed (GtkWidget *widget, gpointer data);
 static void y_changed (GtkWidget *widget, gpointer data);
+static void transparency_changed (GtkWidget *widget, gpointer data);
 
 static void blend_clicked (GtkWidget *widget, gpointer data);
 
@@ -120,8 +121,8 @@ GtkWidget *box_smooth, *box_edge, *box_sharpen;
 /* scale & adjustment widgets */
 GtkWidget *scale_ksize, *scale_canny_thrd1, *scale_canny_thrd2, *scale_landa, *scale_diff_gain;
 GtkAdjustment *adj_ksize, *adj_canny_thrd1, *adj_canny_thrd2, *adj_landa, *adj_diff_gain;
-GtkWidget *scale_width, *scale_height, *scale_x, *scale_y;
-GtkAdjustment *adj_width, *adj_height, *adj_x, *adj_y;
+GtkWidget *scale_width, *scale_height, *scale_x, *scale_y, *scale_transparency;
+GtkAdjustment *adj_width, *adj_height, *adj_x, *adj_y, *adj_transparency;
 
 /* button widgets */
 GtkWidget *button_quit, *button_eq, *button_match, *button_sm, *button_edge, *button_sharpen, *button_blend, *button_load_in;
@@ -139,7 +140,7 @@ GtkWidget *entry_orig, *entry_ref, *entry_fore;
 /* label widgets */
 GtkWidget *lb_ksize, *lb_can_thrd1, *lb_can_thrd2, *lb_landa;
 GtkWidget *lb_smooth, *lb_edge, *lb_sharpen, *lb_gain_diff;
-GtkWidget *lb_height, *lb_width, *lb_x, *lb_y;
+GtkWidget *lb_height, *lb_width, *lb_x, *lb_y, *lb_transparency;
 
 /* my image struct */
 struct imgWidget
@@ -163,6 +164,7 @@ cv2ImageProcessing::CV2_SHARPENING_TYPE sharpen_type;
 int orig_size_min=0;
 double diff_gain=1;
 int width=10,height=10,x=0,y=0;
+double transparency=0;
 
 int main (int   argc, char *argv[])
 {
@@ -304,9 +306,9 @@ int main (int   argc, char *argv[])
   gtk_grid_attach (GTK_GRID (grid_a1), fore_widg.a1_img, 0, 6, 2, 1);
   fore_init();
 
-/* original image */
+/* blend image */
   blend_widg.a1_img  = gtk_image_new_from_pixbuf(gdk_pixbuf_copy(blend_widg.pixbuf));
-  gtk_grid_attach (GTK_GRID (grid_a1), blend_widg.a1_img, 2, 6, 4, 1);
+  gtk_grid_attach (GTK_GRID (grid_a1), blend_widg.a1_img, 2, 6, 5, 1);
 
 /* -------------------------------------------------*
  *                  Entry & Labels                  *
@@ -321,7 +323,7 @@ int main (int   argc, char *argv[])
   gtk_grid_attach (GTK_GRID (grid_a1), entry_fore, 1, 5, 1, 1);
   
   blend_widg.label = gtk_label_new ("輸出圖像");
-  gtk_grid_attach (GTK_GRID (grid_a1), blend_widg.label, 2, 5, 4, 1);
+  gtk_grid_attach (GTK_GRID (grid_a1), blend_widg.label, 2, 5, 5, 1);
   
   lb_width = gtk_label_new ("前景寬度（%）");
   gtk_grid_attach (GTK_GRID (grid_a1), lb_width, 2, 0, 1, 1);
@@ -334,6 +336,9 @@ int main (int   argc, char *argv[])
   
   lb_y = gtk_label_new ("前景y坐標（%）");
   gtk_grid_attach (GTK_GRID (grid_a1), lb_y, 5, 0, 1, 1);
+
+  lb_transparency = gtk_label_new ("前景透明度（%）");
+  gtk_grid_attach (GTK_GRID (grid_a1), lb_transparency, 6, 0, 1, 1);
 
 
 /* -------------------------------------------------*
@@ -359,6 +364,11 @@ int main (int   argc, char *argv[])
   g_signal_connect (scale_y, "value-changed", G_CALLBACK (y_changed), NULL);
   gtk_grid_attach (GTK_GRID (grid_a1), scale_y, 5, 1, 1, 3);
 
+  adj_transparency=gtk_adjustment_new(transparency,0,100,1,1,0);
+  scale_transparency=gtk_scale_new(GTK_ORIENTATION_VERTICAL,GTK_ADJUSTMENT(adj_transparency));
+  g_signal_connect (scale_transparency, "value-changed", G_CALLBACK (transparency_changed), NULL);
+  gtk_grid_attach (GTK_GRID (grid_a1), scale_transparency, 6, 1, 1, 3);
+
 
 /* -------------------------------------------------*
  *                      Buttons                     *
@@ -367,7 +377,7 @@ int main (int   argc, char *argv[])
   button_blend = gtk_button_new_with_label ("影像混合顯示");
   g_signal_connect (button_blend, "clicked", G_CALLBACK (blend_clicked), NULL);
   /* Place in (0, 0), fill 1 cell horizontally and vertically (ie no spanning)*/
-  gtk_grid_attach (GTK_GRID (grid_a1), button_blend, 2, 4, 4, 1);
+  gtk_grid_attach (GTK_GRID (grid_a1), button_blend, 2, 4, 5, 1);
 
 
 /******************************************************************
@@ -803,7 +813,7 @@ static void blend_img()
     int pos_x=(orig_widg.pic_cvImg.cols-size_w)*x/100;
     int pos_y=(orig_widg.pic_cvImg.rows-size_h)*y/100;
 
-    cv2ip.BlendImage( blend_widg.pic_cvImg,fore_widg.pic_cvImg,orig_widg.pic_cvImg,size_w,size_h,pos_x,pos_y);
+    cv2ip.BlendImage( blend_widg.pic_cvImg,fore_widg.pic_cvImg,orig_widg.pic_cvImg,size_w,size_h,pos_x,pos_y,transparency);
     cv2ip.ImWrite(comb_char(img_dir,blend_name),blend_widg.pic_cvImg);
     cv2ip.ImWrite(comb_char(src_dir,output_name),blend_widg.pic_cvImg);
     blend_widg.pixbuf = gdk_pixbuf_new_from_file_at_size(comb_char(img_dir,blend_name),800,400,err);
@@ -1173,6 +1183,12 @@ static void x_changed (GtkWidget *widget, gpointer data)
 static void y_changed (GtkWidget *widget, gpointer data)
 {
   y=gtk_range_get_value (GTK_RANGE(scale_y));
+  blend_img();
+}
+
+static void transparency_changed (GtkWidget *widget, gpointer data)
+{
+  transparency=gtk_range_get_value (GTK_RANGE(scale_transparency))/100;
   blend_img();
 }
 

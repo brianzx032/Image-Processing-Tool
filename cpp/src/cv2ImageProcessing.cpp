@@ -99,7 +99,7 @@ CvImage cv2ImageProcessing::AlphaBlend(const CvImage& Foreground, const CvImage&
     return out_img;
 }
 
-void cv2ImageProcessing::BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y)
+void cv2ImageProcessing::BlendImage(CvImage& DstImg, const CvImage& FgImg, const CvImage& BgImg, int width, int height, int x, int y, double transparent)
 {
     CvImage Fg_taget, ForeImg, AlphaImg, BackImg;
     
@@ -119,6 +119,9 @@ void cv2ImageProcessing::BlendImage(CvImage& DstImg, const CvImage& FgImg, const
     CvImage Fg_resized, Bg_resized, Al_resized;
     Resize(Fg_resized,Bg_resized,ForeImg,BackImg,true);
     Resize(Fg_resized,Al_resized,ForeImg,AlphaImg,true);
+
+    /* transparency */
+    Fg_resized=Fg_resized*(1-transparent)+Bg_resized*transparent;
 
     /* blend */
     CvImage blendImg=AlphaBlend(Fg_resized,Bg_resized,Al_resized);
