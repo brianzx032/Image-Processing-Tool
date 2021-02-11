@@ -2,6 +2,8 @@
 
 for digital image procesing
 
+[![IMAGE ALT TEXT HERE](./preview.png)](https://drive.google.com/file/d/1Tjnl0ZwCD9qAeLRhjfe5TNw1Q316G0YN/view?usp=sharing)
+
 ```
 =========================
  use following commands:
